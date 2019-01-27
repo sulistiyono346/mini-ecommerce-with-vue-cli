@@ -14,7 +14,7 @@ module.exports = {
         })
             .then((result) => {
                 res.status(201).json({
-                    message: "You have been successfully registered, please login first"
+                   result:result, message: "You have been successfully registered, please login first"
                 })
             }).catch((err) => {
                 res.status(400).json(err)

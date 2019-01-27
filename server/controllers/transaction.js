@@ -35,8 +35,6 @@ module.exports = {
         .catch((err) => {
             console.log(err);
         })
-        
-        
     },
     get_cart: (req, res) => {
         Cart.find({ user_id: req.decoded.id })
@@ -44,6 +42,8 @@ module.exports = {
             .then((result) => {
                 res.status(200).json(result)
             }).catch((err) => {
+                console.log(err);
+                
                 res.status(400).json(err)
             });
     },
@@ -98,13 +98,12 @@ module.exports = {
         });
     },
     checkout: (req,res) => {
-        console.log(req.body)
         Cart.find({user_id: req.decoded.id})
         .then((result) => {
             result.forEach(cart => {    
                 let data = {
-                    user_id: req.decoded.id,
-                    item_id: cart.item_id,
+                    user: req.decoded.id,
+                    item: cart.item_id,
                     total_item: cart.total_item,
                     province_id: req.body.provinceid,
                     city_id: req.body.cityid,
@@ -112,20 +111,58 @@ module.exports = {
                     cost: req.body.cost.value,
                     etd: req.body.cost.etd,
                     name: req.body.detail_shipping.name,
-                    address: req.body.detail_shipping.address
+                    address: req.body.detail_shipping.address,
+                    status: false
                 }
-               
-                
             Transaction
                 .create(data)
                 .then((result) => {
-                    
-                }).catch((err) => {
-                    
-                });
-            });
-        }).catch((err) => {
-            
+                    Cart.deleteOne({item_id:cart.item_id})
+                    .then(()=>{
+                        res.status(200).json({
+                           message: "successfully buy item"
+                        })
+                    })
+                })
+            })
+        })
+       .catch((err) => {
+            console.log(err);
         });
-    }
+    },
+    get_transaction_user: (req,res) => {
+      Transaction.find({user:req.decoded.id})
+      .populate('item')
+      .then((result) => {
+        res.status(200).json(result)
+      }).catch((err) => {
+          res.status(400).json(err)
+      });
+    },
+    confirm: (req,res) => {
+      Transaction.findByIdAndUpdate({_id:req.params.id},{$set:{status:true}})
+      .then((result) => {
+        res.status(200).json(result)
+      }).catch((err) => {
+        res.status(400).json(result)
+      })
+    },
+    get_transaction_true: (req,res) => {
+        Transaction.find({status: true})
+        .populate('item')
+        .then((result) => {
+          res.status(200).json(result)
+        }).catch((err) => {
+            res.status(400).json(err)
+        });
+      },
+      get_transaction_false: (req,res) => {
+        Transaction.find({status: false})
+        .populate('item')
+        .then((result) => {
+          res.status(200).json(result)
+        }).catch((err) => {
+            res.status(400).json(err)
+        });
+    },
 }

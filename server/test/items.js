@@ -5,13 +5,39 @@ var expect = chai.expect
 
 chai.use(chaiHttp)
 var Item = require('../models/items')
+var User = require('../models/users')
 var category_id = "5c435e6a0df11a32e41b0b1e"
 var category_id_null = "5c435e6a0df11a32e41b0b1k"
 
+// variabel global
 var item_id
-var item_id_null = "5c435e6a0df11a32e41b0b1h"
+var token
+var user_id
+var id_null = "5c435e6a0df11a32e41b0b1h"
+var token_null = "5c435e6a0df11a32e41b0b1h"
+// end
 
 describe('item backend testing !!!', () => {
+      beforeEach((done) => {
+        let obj = {
+            name: 'user',
+            email: 'user@mail.com',
+            password: '12345'
+        }
+        User.create(obj)
+            .then((tes) => {
+                User.findOne({ _id: tes._id })
+                    .then((result) => {
+                        let obj_user = {
+                            id: result._id,
+                            email: result.email
+                        }
+                        token = create_token(obj_user)
+                        user_id = String(obj_user.id)
+                        done()
+                    })
+            })
+    })
     beforeEach((done) => {
         const obj = {
             title: "barang1",
@@ -30,7 +56,9 @@ describe('item backend testing !!!', () => {
 
     afterEach((done) => {
         Item.remove({}, () => {
-            done()
+            User.remove({},()=>{
+                done()
+            })
         })
     })
 
@@ -50,23 +78,24 @@ describe('item backend testing !!!', () => {
             .request(app)
             .post('/items')
             .send(obj)
-            .end(function (err, res) {
+            .set('token', token)
+            .end(function (err, res) { 
                 expect(err).to.be.null;
                 expect(res).to.have.status(201);
                 expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('_id');
-                expect(res.body).to.have.property('title');
-                expect(res.body).to.have.property('price');
-                expect(res.body).to.have.property('first_stock');
-                expect(res.body).to.have.property('stock');
-                expect(res.body).to.have.property('description');
-                expect(res.body).to.have.property('category');
-                expect(res.body.title).to.equal(obj.title);
-                expect(res.body.price).to.equal(obj.price);
-                expect(res.body.first_stock).to.equal(obj.first_stock);
-                expect(res.body.stock).to.equal(obj.stock);
-                expect(res.body.description).to.equal(obj.description);
-                expect(res.body.category).to.equal(obj.category)
+                expect(res.body.result).to.have.property('_id');
+                expect(res.body.result).to.have.property('title');
+                expect(res.body.result).to.have.property('price');
+                expect(res.body.result).to.have.property('first_stock');
+                expect(res.body.result).to.have.property('stock');
+                expect(res.body.result).to.have.property('description');
+                expect(res.body.result).to.have.property('category');
+                expect(res.body.result.title).to.equal(obj.title);
+                expect(res.body.result.price).to.equal(obj.price);
+                expect(res.body.result.first_stock).to.equal(obj.first_stock);
+                expect(res.body.result.stock).to.equal(obj.stock);
+                expect(res.body.result.description).to.equal(obj.description);
+                expect(res.body.result.category).to.equal(obj.category)
                 done();
             });
     })

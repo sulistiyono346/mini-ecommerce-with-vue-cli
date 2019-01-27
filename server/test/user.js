@@ -44,13 +44,13 @@ describe('Users Register', () => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(201)
                 expect(res.body).to.be.a('object')
-                expect(res.body).to.have.property('name')
-                expect(res.body).to.have.property('email')
-                expect(res.body).to.have.property('password')
+                expect(res.body.result).to.have.property('name')
+                expect(res.body.result).to.have.property('email')
+                expect(res.body.result).to.have.property('password')
 
-                expect(res.body.username).to.equal(obj.username)
-                expect(res.body.email).to.equal(obj.email)
-                expect(res.body.password).to.not.equal(obj.password)
+                expect(res.body.result.username).to.equal(obj.username)
+                expect(res.body.result.email).to.equal(obj.email)
+                expect(res.body.result.password).to.not.equal(obj.password)
 
                 done()
             })

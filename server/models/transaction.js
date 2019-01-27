@@ -1,12 +1,14 @@
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema
+const User = require('./users')
 const Item = require('./items')
+const Cart = require ('./cart')
 
 const transactionSchema = new Schema({
-    user_id: {
+    user: {
         type: Schema.Types.ObjectId, ref: "User"
     },
-    item_id: {
+    item: {
         type: Schema.Types.ObjectId, ref: "Item"
     },
     total_item: {
@@ -32,8 +34,24 @@ const transactionSchema = new Schema({
     },
     address: {
         type :String
+    },
+    status: {
+        type: Boolean
     }
+    
 },{ timestamps: true })
+transactionSchema.pre("save", function () {
+Item
+    .findOne({_id:this.item})
+    .then((result) => {
+        let newStock=result.stock-this.total_item
+         return Item.findOneAndUpdate({_id:this.item}, {$set:{stock:newStock}})
+        next()
+    }).
+    catch((err)=>{
+        console.log(err);
+    })
+})
 
 
 

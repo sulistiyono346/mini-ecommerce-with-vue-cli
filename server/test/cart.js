@@ -84,15 +84,16 @@ describe('Cart', () => {
             .send(obj)
             .set('token', token)
             .end(function (err, res) {
+                
                 expect(err).to.be.null;
                 expect(res).to.have.status(201);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('_id');
-                expect(res.body).to.have.property('user_id');
-                expect(res.body).to.have.property('item_id');
-                expect(res.body).to.have.property('total_item');
-                expect(res.body.item_id).to.equal(obj.item_id);
-                expect(res.body.total_item).to.equal(obj.total_item);
+                expect(res.body.result).to.be.an('object');
+                expect(res.body.result).to.have.property('_id');
+                expect(res.body.result).to.have.property('user_id');
+                expect(res.body.result).to.have.property('item_id');
+                expect(res.body.result).to.have.property('total_item');
+                expect(res.body.result.item_id).to.equal(obj.item_id);
+                expect(res.body.result.total_item).to.equal(obj.total_item);
                 done();
             });
     })
@@ -146,7 +147,6 @@ describe('Cart', () => {
                 done();
             });
     })
-
     it(' GET /transactions/cart should with id not registered send an object of all item user cart with 400 status code', function (done) {
         const obj = {
             item_id: item_id,
@@ -192,10 +192,7 @@ describe('Cart', () => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(200);
                 expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('n');
-                expect(res.body).to.have.property('ok');
-                expect(res.body.n).to.equal(1);
-                expect(res.body.ok).to.equal(1);
+                expect(res.body.err).to.have.property('message');
                 done();
             });
     })
@@ -219,9 +216,9 @@ describe('Cart', () => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(400);
                 expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('message');
-                expect(res.body).to.have.property('name');
-                expect(res.body.name).to.equal('CastError');
+                expect(res.body.err).to.have.property('message');
+                expect(res.body.err).to.have.property('name');
+                expect(res.body.err.name).to.equal('CastError');
 
                 done();
             });

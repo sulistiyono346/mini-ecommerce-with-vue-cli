@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema
 
-const item_schema = new Schema({
+const itemSchema = new Schema({
     title: {
         type: String,
         required: [true, " Title can't be blank"]
@@ -30,5 +30,6 @@ const item_schema = new Schema({
     }
 })
 
-const Item = mongoose.model("Item", item_schema);
+
+const Item = mongoose.model("Item", itemSchema);
 module.exports = Item
